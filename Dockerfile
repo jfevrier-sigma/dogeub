@@ -29,16 +29,17 @@ ENV PORT=3000
 # Install only production deps
 COPY package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force
+RUN chown -R node:node /app
 
 # Copy only what runtime needs:
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/public ./public
-COPY --from=build /app/server.js ./server.js
+COPY --chown=node:node --from=build /app/dist ./dist
+COPY --chown=node:node --from=build /app/public ./public
+COPY --chown=node:node --from=build /app/server.js ./server.js
 
 # Optional files seen in repo root (safe to include)
-COPY --from=build /app/masqr.js ./masqr.js
-COPY --from=build /app/Checkfailed.html ./Checkfailed.html
-COPY --from=build /app/placeholder.svg ./placeholder.svg
+COPY --chown=node:node --from=build /app/masqr.js ./masqr.js
+COPY --chown=node:node --from=build /app/Checkfailed.html ./Checkfailed.html
+COPY --chown=node:node --from=build /app/placeholder.svg ./placeholder.svg
 
 # Run as non-root (the official node image defines a 'node' user)
 USER node
